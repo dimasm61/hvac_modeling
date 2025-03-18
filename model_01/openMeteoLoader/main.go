@@ -16,7 +16,7 @@ func main() {
 
 	dataToSave := Convert(openMeteoModel)
 
-	uploadToDbBatch("spb1", dataToSave)
+	uploadToDbBatch("SKhb", dataToSave)
 }
 
 func Convert(model *OpenMeteoResponseModel) []WeatherItem {
@@ -47,7 +47,8 @@ func GetOpenMeteoData() *OpenMeteoResponseModel {
 	request, err := http.NewRequest(
 		"GET",
 		"https://archive-api.open-meteo.com/v1/archive"+
-			"?latitude=60.071&longitude=30.445"+
+			"?latitude=48.518&longitude=135.167"+
+			//"?latitude=60.071&longitude=30.445"+
 			//"?latitude=52.52&longitude=13.41"+
 			"&start_date=2023-07-01"+
 			"&end_date=2024-07-02"+
@@ -71,8 +72,8 @@ func GetOpenMeteoData() *OpenMeteoResponseModel {
 	if contentType != "application/json" {
 		body, _ := io.ReadAll(response.Body)
 
-		//bodyString := string(body)
-		//fmt.Println(bodyString)
+		bodyString := string(body)
+		fmt.Println(bodyString)
 
 		model := &OpenMeteoResponseModel{}
 		err = json.Unmarshal(body, model)

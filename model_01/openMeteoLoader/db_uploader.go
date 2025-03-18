@@ -29,7 +29,7 @@ func uploadToDbBatch(mName string, mItems []WeatherItem) {
 	}
 	defer db.Close()
 
-	clearStatement := `DELETE FROM meteo.model.weather_data where model_name = $1`
+	clearStatement := `DELETE FROM meteo.modeling.weather_data where model_name = $1`
 	_, err = db.Exec(clearStatement, mName)
 	if err != nil {
 		panic(err)
@@ -49,7 +49,7 @@ func uploadToDbBatch(mName string, mItems []WeatherItem) {
 	vString := strings.Join(valueStrings, ",")
 
 	sqlStatement := fmt.Sprintf(
-		"INSERT INTO meteo.model.weather_data (model_name, m_time, m_temperature, m_humidity) VALUES %s",
+		"INSERT INTO meteo.modeling.weather_data (model_name, m_time, m_temperature, m_humidity) VALUES %s",
 		vString)
 
 	_, err = db.Exec(sqlStatement, valueArgs...)
@@ -72,14 +72,14 @@ func uploadToDb(mName string, mItems []WeatherItem) {
 	}
 	defer db.Close()
 
-	clearStatement := `DELETE FROM meteo.model.weather_data where model_name = $1`
+	clearStatement := `DELETE FROM meteo.modeling.weather_data where model_name = $1`
 	_, err = db.Query(clearStatement, mName)
 	if err != nil {
 		panic(err)
 	}
 
 	sqlStatement := `
-		INSERT INTO meteo.model.weather_data (model_name, m_time, m_temperature, m_humidity)
+		INSERT INTO meteo.modeling.weather_data (model_name, m_time, m_temperature, m_humidity)
 		VALUES ($1, $2, $3, $4)`
 
 	for i := 0; i < len(mItems); i++ {
@@ -109,7 +109,7 @@ func dbTest() {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO meteo.model.weather_data (model_name, m_time, m_temperature, m_humidity)
+		INSERT INTO meteo.modeling.weather_data (model_name, m_time, m_temperature, m_humidity)
 		VALUES ($1, $2, $3, $4)`
 
 	_, err = db.Query(sqlStatement, "test", time.Now(), 123.7, 35)

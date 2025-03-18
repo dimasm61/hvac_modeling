@@ -65,7 +65,7 @@ begin
             e_temp_indoor_exhaust = 25;
 
             -- температура которая должна быть на решётке в доме
-            temp_indoor_intake := 18;
+            temp_indoor_intake := modeling.get_indoor_temperature_by_day(temp_outdoor, dt);
 
             if date_part('month',dt) in (10,11,12,1,2,3,4) then
                 -- сезон отопления, батареи открываем посильнее
@@ -190,12 +190,31 @@ begin
 end;
 $$;
 
-select *
-     , round(kwh_cost_total - e_kwh_cost_total, 2) as e_profit_kwh_cost
-     , case when kwh_cost_total <> 0 then
-           round((kwh_cost_total - e_kwh_cost_total)/kwh_cost_total * 100.0, 2)
-       else 0 end as e_profit_efficient
+select num
+     , dt
+     , air_flow
+     , temp_outdoor
+     , temp_indoor_intake
+     , temp_delta
+     , kwh_heating
+     , kwh_cost_unit
+     , kwh_cost_total
 from modeling.simulation1();
+
+select  date_part('year' , s.dt) as year
+      , date_part('month', s.dt) as month
+      , date_part('day'  , s.dt) as day
+      , date_part('hour' , s.dt) as hour
+      , min(temp_outdoor)   as temp_outdoor_min
+      , max(temp_outdoor)   as temp_outdoor_max
+      , avg(temp_indoor_intake)   as temp_indoor
+      , sum(kwh_heating)    as kwh_heating
+      , max(kwh_cost_unit)  as kwh_cost_unit
+      , sum(kwh_cost_total) askwh_cost_total
+from modeling.simulation1() as s
+group by date_part('year', s.dt), date_part('month', s.dt), date_part('day', s.dt), date_part('hour'  , s.dt)
+order by date_part('year', s.dt), date_part('month', s.dt), date_part('day', s.dt), date_part('hour'  , s.dt)
+;
 
 
 select date_part('year', s.dt)  as                 year
